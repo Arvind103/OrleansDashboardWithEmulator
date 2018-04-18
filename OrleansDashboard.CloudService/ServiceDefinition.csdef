@@ -4,5 +4,8 @@
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
     </ConfigurationSettings>
+	<EndPoints>
+      <InputEndpoint name="OrleansDasboard" protocol="tcp" port="8080" localPort="8080" />
+    </EndPoints>
   </WorkerRole>
 </ServiceDefinition>
