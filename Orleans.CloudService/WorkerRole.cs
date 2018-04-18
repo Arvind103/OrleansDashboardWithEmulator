@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
+using Microsoft.WindowsAzure.ServiceRuntime;
+using Orleans;
+using Orleans.Configuration;
+using Orleans.Hosting;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure;
-using Microsoft.WindowsAzure.Diagnostics;
-using Microsoft.WindowsAzure.ServiceRuntime;
-using Microsoft.WindowsAzure.Storage;
-using Orleans.Hosting;
+using TestGrains;
 
 namespace Orleans.CloudService
 {
@@ -66,11 +63,32 @@ namespace Orleans.CloudService
         private async Task RunAsync(CancellationToken cancellationToken)
         {
             // TODO: Replace the following with your own logic.
+            var siloPort = 11111;
+            int gatewayPort = 30000;
+            var siloAddress = IPAddress.Loopback;
+
+            var silo =
+                new SiloHostBuilder()
+                    .UseDashboard(options =>
+                    {
+                        options.HostSelf = true;
+                        options.HideTrace = false;
+                    })
+                    .UseDevelopmentClustering(options => options.PrimarySiloEndpoint = new IPEndPoint(siloAddress, siloPort))
+                    .UseInMemoryReminderService()
+                    .ConfigureEndpoints(siloAddress, siloPort, gatewayPort)
+                    .Configure<ClusterOptions>(options => options.ClusterId = "helloworldcluster")
+                    .ConfigureApplicationParts(appParts => appParts.AddApplicationPart(typeof(TestCalls).Assembly))
+                    .Build();
+
+            await silo.StartAsync();
+
             while (!cancellationToken.IsCancellationRequested)
             {
-                Trace.TraceInformation("Working");
                 await Task.Delay(1000);
             }
+
+            await silo.StopAsync();
         }
     }
 }
