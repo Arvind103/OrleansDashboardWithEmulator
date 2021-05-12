@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "chart.js": "2.2.2",
+    "chart.js": "2.9.4",
     "eventthing": "^1.0.7",
     "humanize-duration": "^3.9.1",
     "react": "^15.4.2",
